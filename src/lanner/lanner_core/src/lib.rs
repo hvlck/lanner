@@ -7,6 +7,7 @@ pub fn add(nums: Vec<f64>) -> f64 {
     for number in nums.iter() {
         sum += number;
     }
+
     sum
 }
 
@@ -17,13 +18,26 @@ pub fn add(nums: Vec<f64>) -> f64 {
 /// Since `2.0` is the first item, it is the number that will be the starting value; that is, each consecutive number will subtract from it after the previous number has, thus creating the difference, `0.0`.
 pub fn subtract(nums: Vec<f64>) -> f64 {
     let mut diff = nums[0];
-    let mut subiter = nums.iter();
+    let mut sub_iter = nums.iter();
     
-    subiter.next();
-    for number in subiter {
+    sub_iter.next();
+    for number in sub_iter {
         diff -= number;
     }
+
     diff
+}
+
+pub fn multiply(nums: Vec<f64>) -> f64 {
+    let mut product = nums[0];
+    let mut mult_iter = nums.iter();
+    
+    mult_iter.next();
+    for factor in mult_iter {
+        product *= factor;
+    }
+
+    product
 }
 
 #[cfg(test)]
@@ -37,5 +51,9 @@ mod tests {
     #[test]
     fn check_subtract() {
         assert_eq!(subtract(vec![2.2, 2.2]), 0.0);
+    }
+    #[test]
+    fn check_multiply() {
+        assert_eq!(multiply(vec![2.0, 2.0]), 4.0);
     }
 }

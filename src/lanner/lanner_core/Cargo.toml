@@ -1,5 +1,5 @@
 [package]
-name = "lanner-core"
+name = "lanner_core"
 version = "0.1.0"
 authors = ["EthanJustice <47954690+EthanJustice@users.noreply.github.com>"]
 edition = "2018"
