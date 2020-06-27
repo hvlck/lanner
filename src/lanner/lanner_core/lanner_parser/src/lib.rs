@@ -1,13 +1,13 @@
 /// Represents a mathematical expression.
-/// ```markdown
 /// The `original` field represents the original expression, in a `String`.
+/// 
 /// The `pieces` field represents a `vector` of `chars`, containing the pieces of `original` broken into chunks to iterate over.
-/// The `total` field represents the value of the expression.
-/// ```
+/// 
+/// The `total` field is an Option<T> enum, representing the value of the expression (Some<f64>), or the lack of being solved (None).
 pub struct Expression {
     pub original: String,
     pieces: Vec<char>,
-    total: f64
+    total: Option<f64>
 }
 
 impl Expression {
@@ -22,7 +22,7 @@ impl Expression {
         Expression {
             original: exp,
             pieces: pieces,
-            total: 0.0
+            total: None
         }
     }
 }
@@ -35,11 +35,11 @@ mod tests {
         let example = Expression {
             original: String::from("1+1"),
             pieces: vec!['1', '+', '1'],
-            total: 0.0
+            total: None
         };
-        let fromNew = Expression::new(String::from("1+1"));
-        assert_eq!(fromNew.original, example.original);
-        assert_eq!(fromNew.total, example.total);
-        assert_eq!(fromNew.pieces, example.pieces);
+        let from_new = Expression::new(String::from("1+1"));
+        assert_eq!(from_new.original, example.original);
+        assert_eq!(from_new.total, example.total);
+        assert_eq!(from_new.pieces, example.pieces);
     }
 }
