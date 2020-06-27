@@ -28,6 +28,10 @@ pub fn subtract(nums: Vec<f64>) -> f64 {
     diff
 }
 
+/// Returns an `f64` that represents the sum of all the `vector` items, beginning with the first item.
+/// ```rust
+/// multiply(vec![2.0, 2.0]) // returns 4.0
+/// ```
 pub fn multiply(nums: Vec<f64>) -> f64 {
     let mut product = nums[0];
     let mut mult_iter = nums.iter();
@@ -47,13 +51,18 @@ mod tests {
     fn check_add() {
         assert_eq!(add(vec![10.0000025, 10.00001]), 20.0000125);
         assert_eq!(add(vec![2.2, 2.2]), 4.4);
+        assert_eq!(add(vec![1.0]), 1.0);
     }
     #[test]
     fn check_subtract() {
         assert_eq!(subtract(vec![2.2, 2.2]), 0.0);
+        assert_eq!(subtract(vec![1.0]), 1.0);
     }
     #[test]
     fn check_multiply() {
         assert_eq!(multiply(vec![2.0, 2.0]), 4.0);
+        assert_eq!(multiply(vec![2.0, 2.0, 2.0]), 8.0);
+        assert_eq!(multiply(vec![1.0, 1.0]), 1.0);
+        assert_eq!(multiply(vec![1.0]), 1.0);
     }
 }
