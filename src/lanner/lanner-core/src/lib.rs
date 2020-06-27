@@ -1,3 +1,7 @@
+/// Returns an `f64` that represents the sum of all numbers in the vector.
+/// ```rust
+/// add(vec![10.0, 10.1]) // returns 20.1
+/// ```
 pub fn add(nums: Vec<f64>) -> f64 {
     let mut sum: f64 = 0.0;
     for number in nums.iter() {
@@ -6,6 +10,11 @@ pub fn add(nums: Vec<f64>) -> f64 {
     sum
 }
 
+/// Returns an `f64` that represents the difference between the first `f64` in the `vector` and the following vector items.
+/// ```rust
+/// subtract(vec![2.0, 1.0, 1.0]) // returns 0, because 2 - 1 - 1 is 0
+/// ```
+/// Since `2.0` is the first item, it is the number that will be the starting value; that is, each consecutive number will subtract from it after the previous number has, thus creating the difference, `0.0`.
 pub fn subtract(nums: Vec<f64>) -> f64 {
     let mut diff = nums[0];
     let mut subiter = nums.iter();
