@@ -14,7 +14,7 @@ impl SolverController {
         
         let mut threads = Vec::new();
 
-        for piece in new_exp.pieces.len() {
+        for piece in new_exp.pieces.iter() {
             threads.push(Solver::new(piece))
         }
 
