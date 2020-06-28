@@ -1,2 +1,3 @@
 # lanner
- efficient graphing calculator in rust
+
+efficient graphing calculator in rust
