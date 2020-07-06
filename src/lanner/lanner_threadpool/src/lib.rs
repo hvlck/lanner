@@ -1,5 +1,10 @@
+// std
 use std::thread;
 
+// external
+use rayon::*;
+
+// local
 use lanner_parser::*;
 
 pub struct SolverController {
@@ -15,7 +20,7 @@ impl SolverController {
         let mut threads = Vec::new();
 
         for piece in new_exp.pieces.iter() {
-            threads.push(Solver::new(piece.to_vec()))
+            
         }
 
         SolverController {
@@ -32,13 +37,9 @@ struct Solver {
 }
 
 impl Solver {
-    fn new(exp: Vec<char>) -> Solver {
-        let clone = exp.clone();
+    fn new(exp: Vec<char>) //-> Solver
+    {
 
-        Solver {
-            expression: clone,
-            thread: thread
-        }
     }
 }
 
