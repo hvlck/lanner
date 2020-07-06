@@ -11,11 +11,11 @@ pub struct SolverController {
 impl SolverController {
     pub fn new(exp: String) -> SolverController {
         let new_exp = Expression::new(exp.clone());
-        
+
         let mut threads = Vec::new();
 
         for piece in new_exp.pieces.iter() {
-            threads.push(Solver::new(piece))
+            threads.push(Solver::new(piece.to_vec()))
         }
 
         SolverController {
@@ -34,9 +34,6 @@ struct Solver {
 impl Solver {
     fn new(exp: Vec<char>) -> Solver {
         let clone = exp.clone();
-        let thread = thread::spawn(move || {
-            
-        });
 
         Solver {
             expression: clone,
