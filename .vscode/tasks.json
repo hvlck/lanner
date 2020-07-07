@@ -24,6 +24,12 @@
 			"type": "shell",
 			"command": "cd src/lanner\ncargo test",
 			"problemMatcher": []
+		},
+		{
+			"label": "build and open docs",
+			"type": "shell",
+			"command": "cd src/lanner\ncargo doc --open",
+			"problemMatcher": []
 		}
 	]
 }
