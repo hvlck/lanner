@@ -20,11 +20,26 @@ impl Expression {
 
         let mut nums: Vec<f64> = Vec::new();
         
-        for item in exp.chars() {
+        let mut iter = exp.chars().fuse();
+
+        while let Some(item) = iter.next() {
             if item.is_numeric() {
-                match item.to_owned().to_digit(10) {
-                    Some(val) => nums.push(val.into()),
-                    None => continue
+                match &iter.next() {
+                    Some(val) => {
+                        match item.to_owned().to_digit(10) {
+                            Some(val) => nums.push(val.into()),
+                            None => continue
+                        }
+                    },
+                    None => {
+                        for operator in OPERATORS.iter() {
+                            if exp.contains(*operator) {
+                                pieces.push(ExpressionFragment::new(&nums, *operator));
+                            }
+                        }
+                        
+                        nums.clear();
+                    }
                 }
             } else if !item.is_numeric() {
                 for operator in OPERATORS.iter() {
@@ -34,7 +49,7 @@ impl Expression {
                 }
 
                 nums.clear();
-            }            
+            }
         }
 
         Expression {
@@ -52,6 +67,7 @@ pub struct ExpressionFragment {
 
 impl ExpressionFragment {
     pub fn new(original: &Vec<f64>, operation: char) -> ExpressionFragment {
+        println!("{:?} {}", original.clone(), operation);
         ExpressionFragment {
             operation: operation,
             pieces: original.clone()
