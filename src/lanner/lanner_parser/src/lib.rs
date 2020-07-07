@@ -67,7 +67,6 @@ pub struct ExpressionFragment {
 
 impl ExpressionFragment {
     pub fn new(original: &Vec<f64>, operation: char) -> ExpressionFragment {
-        println!("{:?} {}", original.clone(), operation);
         ExpressionFragment {
             operation: operation,
             pieces: original.clone()

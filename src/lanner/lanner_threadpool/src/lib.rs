@@ -36,6 +36,10 @@ impl SolverController {
             total: value
         }
     }
+
+    pub fn get_total(&self) -> f64 {
+        self.total
+    }
 }
 
 struct Solver {
