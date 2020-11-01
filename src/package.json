@@ -1,0 +1,31 @@
+{
+    "name": "lanner",
+    "version": "0.0.1",
+    "description": "math evaluator",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo test",
+        "build:untouched": "asc assembly/index.ts --target debug",
+        "build:optimized": "asc assembly/index.ts --target release",
+        "build": "npm run asbuild:untouched && npm run asbuild:optimized"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/EthanJustice/lanner.git"
+    },
+    "keywords": [
+        "math"
+    ],
+    "author": "Ethan Justice",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/EthanJustice/lanner/issues"
+    },
+    "homepage": "https://github.com/EthanJustice/lanner#readme",
+    "dependencies": {
+        "@assemblyscript/loader": "^0.17.1"
+    },
+    "devDependencies": {
+        "assemblyscript": "^0.17.1"
+    }
+}
