@@ -1,3 +1,3 @@
 # lanner
 
-math evaluator
+math evaluator targeting WASM/JS
