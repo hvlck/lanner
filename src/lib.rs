@@ -11,10 +11,15 @@ use eval::evaluate_simple_expression;
 
 #[derive(Debug, Clone)]
 pub enum LannerError {
+    /// The given function has invalid syntax
     InvalidFunction,
+    /// The given expression has invalid syntax
     InvalidExpression,
+    /// The given input has invalid syntax
     InvalidInput,
+    /// Something went wrong while parsing
     ParsingError(Error<Rule>),
+    /// Something else went wrong
     Other(&'static str),
 }
 
@@ -199,6 +204,46 @@ mod tests {
     #[test]
     fn addition_eval() {
         assert_eq!(evaluate("20 + 30").unwrap(), 50.0);
+        assert_eq!(evaluate("-20 + 30").unwrap(), 10.0);
+        assert_eq!(evaluate("-20 + -30").unwrap(), -50.0);
+        assert_eq!(evaluate("-20.2 + 30").unwrap(), 9.8);
+        assert_eq!(evaluate("10.1 + .1").unwrap(), 10.2);
+    }
+
+    #[test]
+    fn subtraction_eval() {
+        assert_eq!(evaluate("30 - 30").unwrap(), 0.0);
+        assert_eq!(evaluate("20 - 30").unwrap(), -10.0);
+        assert_eq!(evaluate("-20 - 30").unwrap(), -50.0);
+        assert_eq!(evaluate("-20 - -30").unwrap(), 10.0);
+        assert_eq!(evaluate("-20.2 - 30").unwrap(), -50.2);
+        assert_eq!(evaluate("10.2 - 0.2").unwrap(), 10.0);
+    }
+
+    #[test]
+    fn multiplication_eval() {
+        assert_eq!(evaluate("30 * 30").unwrap(), 900.0);
+        assert_eq!(evaluate("-30 * 30").unwrap(), -900.0);
+        assert_eq!(evaluate("-20 * -30").unwrap(), 600.0);
+        assert_eq!(evaluate("-20.2 * 30").unwrap(), -606.0);
+        assert_eq!(evaluate("-20.2 * -30.3").unwrap(), 612.06);
+    }
+
+    #[test]
+    fn division_eval() {
+        assert_eq!(evaluate("30 / 30").unwrap(), 1.0);
+        assert_eq!(evaluate("-30 / 30").unwrap(), -1.0);
+        assert_eq!(evaluate("-20 / -30").unwrap(), 0.6666666666666666);
+        assert_eq!(evaluate("-1.2 / 2").unwrap(), -0.6);
+        assert_eq!(evaluate("-1.2 / -2").unwrap(), 0.6);
+    }
+
+    #[test]
+    fn exponent_eval() {
+        assert_eq!(evaluate("10 ^ 3").unwrap(), 1000.0);
+        assert_eq!(evaluate("-10 ^ 2").unwrap(), 100.0);
+        assert_eq!(evaluate("-10 ^ -2").unwrap(), 0.01);
+        assert_eq!(evaluate("-10.2 ^ -0.5").unwrap().is_nan(), true);
     }
 }
 
