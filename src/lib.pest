@@ -7,7 +7,7 @@ operation = @{ add | subtract | multiply | divide | modulo | exponent | root }
     exponent              = { "^" }
     root               = { "^/" }
 
-function = { function_keywords ~ "(" ~ number ~ ")" }
+function = { function_keywords ~ "(" ~ (simple_expression | number) ~ ")" }
 
 function_keywords = @{ "sin" | "cos" | "tan" | "sqrt" }
 

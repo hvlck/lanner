@@ -9,6 +9,9 @@ use pest::{error::Error, Parser};
 mod eval;
 use eval::{evaluate_function, evaluate_simple_expression};
 
+mod conversions;
+use conversions::Unit;
+
 #[derive(Debug, Clone)]
 pub enum LannerError {
     /// The given function has invalid syntax
@@ -26,6 +29,11 @@ pub enum LannerError {
 /// Represents an AstNode which lanner consumes when evaluating expressions.
 #[derive(Debug, Clone)]
 pub enum AstNode {
+    Conversion {
+        to: Unit,
+        from: Unit,
+        value: f64,
+    },
     /// Represents a function operation.
     ///
     /// Syntax: functionName(value)
@@ -120,12 +128,27 @@ fn parse_to_ast(pair: pest::iterators::Pair<Rule>) -> AstNode {
         Rule::function => {
             let mut pair = pair.into_inner();
             let function = pair.next().unwrap();
-            let value = pair.next().unwrap().as_str().parse::<f64>().unwrap();
+
+            let next = pair.next().unwrap();
+            let value = match next.as_rule() {
+                Rule::simple_expression => match evaluate_simple_expression(parse_to_ast(next)) {
+                    Ok(value) => Ok(value),
+                    Err(error) => Err(error),
+                },
+                Rule::number => match next.as_str().parse::<f64>() {
+                    Ok(value) => Ok(value),
+                    Err(_error) => Err(LannerError::InvalidInput),
+                },
+                _ => Err(LannerError::InvalidInput),
+            };
 
             let function = parse_function(function);
 
             match function {
-                Ok(function) => AstNode::FunctionOp { value, function },
+                Ok(function) => match value {
+                    Ok(value) => AstNode::FunctionOp { value, function },
+                    Err(error) => AstNode::Error(error),
+                },
                 Err(error) => AstNode::Error(error.to_owned()),
             }
         }
@@ -267,7 +290,7 @@ mod tests {
 
     #[test]
     fn test_sin() {
-        assert_eq!(evaluate("sin(1000)").unwrap(), 0.8268795405320025);
+        assert_eq!(evaluate("sin(500 + 500)").unwrap(), 0.8268795405320025);
     }
 
     #[test]
