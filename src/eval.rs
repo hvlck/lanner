@@ -1,6 +1,6 @@
-use crate::{AstNode, Operation};
+use crate::{AstNode, LannerError, Operation};
 
-pub fn evaluate_simple(node: AstNode) -> Result<f64, ()> {
+pub fn evaluate_simple_expression(node: AstNode) -> Result<f64, LannerError> {
     match node {
         AstNode::Expression { lhs, rhs, operator } => match operator {
             Operation::Add => Ok(lhs + rhs),
@@ -8,8 +8,10 @@ pub fn evaluate_simple(node: AstNode) -> Result<f64, ()> {
             Operation::Divide => Ok(lhs / rhs),
             Operation::Multiply => Ok(lhs * rhs),
             Operation::Exponent => Ok(lhs.powf(rhs)),
-            _ => Err(()),
+            _ => Err(LannerError::InvalidExpression),
         },
-        _ => Err(()),
+        _ => Err(LannerError::Other(
+            "Expression contains something other than simple arithmetic.",
+        )),
     }
 }

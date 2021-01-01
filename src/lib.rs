@@ -7,7 +7,16 @@ use pest::{error::Error, Parser};
 
 // local
 mod eval;
-use eval::evaluate_simple;
+use eval::evaluate_simple_expression;
+
+#[derive(Debug, Clone)]
+pub enum LannerError {
+    InvalidFunction,
+    InvalidExpression,
+    InvalidInput,
+    ParsingError(Error<Rule>),
+    Other(&'static str),
+}
 
 /// Represents an AstNode which lanner consumes when evaluating expressions.
 #[derive(Debug, Clone)]
@@ -32,7 +41,7 @@ pub enum AstNode {
         operator: Operation,
     },
     /// An error of some sorts. This will later be replaced by an enum
-    Error(&'static str),
+    Error(LannerError),
 }
 
 /// Function corresponds to a special function that don't have a symbol equivalent (e.g. addition has "+"). There are few functions now.
@@ -83,7 +92,7 @@ pub fn parse(src: &str) -> Result<Vec<AstNode>, Error<Rule>> {
             Rule::expression => {
                 ast.push(parse_to_ast(pair));
             }
-            _ => ast.push(AstNode::Error("Something went wrong.")),
+            _ => ast.push(AstNode::Error(LannerError::InvalidInput)),
         }
     }
 
@@ -110,10 +119,10 @@ fn parse_to_ast(pair: pest::iterators::Pair<Rule>) -> AstNode {
 
             match function {
                 Ok(function) => AstNode::FunctionOp { value, function },
-                Err(()) => AstNode::Error("Failed to parse function."),
+                Err(error) => AstNode::Error(error.to_owned()),
             }
         }
-        _ => AstNode::Error("Invalid input."),
+        _ => AstNode::Error(LannerError::InvalidInput),
     }
 }
 
@@ -145,34 +154,36 @@ fn parse_operator(operator: pest::iterators::Pair<Rule>) -> Operation {
 }
 
 /// Converts a given Pest rule into a Function in the AST
-fn parse_function(function: pest::iterators::Pair<Rule>) -> Result<Function, ()> {
+fn parse_function(function: pest::iterators::Pair<Rule>) -> Result<Function, LannerError> {
     match function.as_str() {
         "sin" => Ok(Function::Sin),
         "cos" => Ok(Function::Cos),
         "tan" => Ok(Function::Tan),
-        _ => Err(()),
+        _ => Err(LannerError::InvalidFunction),
     }
 }
 
 /// Evaluates a given expression, such as "10 + 10"
-pub fn evaluate(src: &str) -> Result<f64, String> {
+pub fn evaluate(src: &str) -> Result<f64, LannerError> {
     let ast = parse(src);
     match ast {
         Ok(ast) => {
             let pair = ast.get(0).unwrap();
             match pair {
                 //                AstNode::FunctionOp { function, expr } => {}
-                AstNode::Expression { lhs, rhs, operator } => {
-                    match evaluate_simple(pair.to_owned()) {
-                        Ok(result) => Ok(result),
-                        Err(()) => Err(String::from("Somethign went wrong.")),
-                    }
-                }
-                AstNode::Error(_) => Err(String::from("Something went wrong.")),
-                _ => Err(String::from("Something went wrong.")),
+                AstNode::Expression {
+                    lhs: _,
+                    rhs: _,
+                    operator: _,
+                } => match evaluate_simple_expression(pair.to_owned()) {
+                    Ok(result) => Ok(result),
+                    Err(error) => Err(error.to_owned()),
+                },
+                AstNode::Error(error) => Err(error.to_owned()),
+                _ => Err(LannerError::InvalidInput),
             }
         }
-        Err(error) => Err(String::from("Something went wrong.")),
+        Err(error) => Err(LannerError::ParsingError(error)),
     }
 }
 
