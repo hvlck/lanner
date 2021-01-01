@@ -1,11 +1,11 @@
-operation = @{ add | subtract | multiply | divide | divide_with_remainder | exponent | radical }
+operation = @{ add | subtract | multiply | divide | modulo | exponent | root }
     add                   = { "+" }
     subtract              = { "-" }
     multiply              = { "*" }
     divide                = { "/" }
-    divide_with_remainder = { "%" }
-    exponent              = { "**" }
-    radical               = { "*/*" }
+    modulo = { "%" }
+    exponent              = { "^" }
+    root               = { "^/" }
 
 function = { function_keywords ~ "(" ~ number ~ ")" }
 
