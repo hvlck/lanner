@@ -6,8 +6,10 @@ use pest_derive::*;
 use pest::{error::Error, Parser};
 
 // local
+mod eval;
+use eval::evaluate_simple;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum AstNode {
     FunctionOp {
         function: Function,
@@ -21,14 +23,14 @@ pub enum AstNode {
     Error(&'static str),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Function {
     Cos,
     Sin,
     Tan,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Operation {
     Add,
     Subtract,
@@ -43,17 +45,17 @@ pub enum Operation {
 #[grammar = "lib.pest"]
 pub struct LannerParser;
 
-pub fn parse(src: &str) -> Result<AstNode, Error<Rule>> {
-    let mut ast: AstNode;
+pub fn parse(src: &str) -> Result<Vec<AstNode>, Error<Rule>> {
+    let mut ast: Vec<AstNode> = Vec::new();
 
     let exp = LannerParser::parse(Rule::expression, src)?;
-    println!("{:#?}", exp); // debugging
+    //    println!("{:#?}", exp); // debugging
     for pair in exp {
         match pair.as_rule() {
             Rule::expression => {
-                ast = parse_to_ast(pair);
+                ast.push(parse_to_ast(pair));
             }
-            _ => ast = AstNode::Error("Something went wrong."),
+            _ => ast.push(AstNode::Error("Something went wrong.")),
         }
     }
 
@@ -70,10 +72,23 @@ fn parse_to_ast(pair: pest::iterators::Pair<Rule>) -> AstNode {
             let op = pair.next().unwrap();
             let rhs = pair.next().unwrap();
             parse_expression(op, lhs, rhs)
-        },
-        _ => {
-            AstNode::Error("Something went wrong.")
         }
+        Rule::function => {
+            let mut pair = pair.into_inner();
+            let function = pair.next().unwrap();
+            let value = pair.next().unwrap().as_str().parse::<f64>().unwrap();
+
+            let function = parse_function(function);
+
+            match function {
+                Ok(function) => AstNode::FunctionOp {
+                    expr: value,
+                    function,
+                },
+                Err(()) => AstNode::Error("Failed to parse function."),
+            }
+        }
+        _ => AstNode::Error("Invalid input."),
     }
 }
 
@@ -90,8 +105,7 @@ fn parse_expression(
 }
 
 fn parse_operator(operator: pest::iterators::Pair<Rule>) -> Operation {
-    let operator = operator.as_str();
-    match operator {
+    match operator.as_str() {
         "+" => Operation::Add,
         "-" => Operation::Subtract,
         "*" => Operation::Multiply,
@@ -103,17 +117,48 @@ fn parse_operator(operator: pest::iterators::Pair<Rule>) -> Operation {
     }
 }
 
-pub fn evaluate() -> Result<f64, Error<Rule>> {
-    todo!()
+fn parse_function(function: pest::iterators::Pair<Rule>) -> Result<Function, ()> {
+    match function.as_str() {
+        "sin" => Ok(Function::Sin),
+        "cos" => Ok(Function::Cos),
+        "tan" => Ok(Function::Tan),
+        _ => Err(()),
+    }
+}
+
+pub fn evaluate(src: &str) -> Result<f64, String> {
+    let ast = parse(src);
+    match ast {
+        Ok(ast) => {
+            let pair = ast.get(0).unwrap();
+            match pair {
+                //                AstNode::FunctionOp { function, expr } => {}
+                AstNode::Expression { lhs, rhs, operator } => {
+                    match evaluate_simple(pair.to_owned()) {
+                        Ok(result) => Ok(result),
+                        Err(()) => Err(String::from("Somethign went wrong.")),
+                    }
+                }
+                AstNode::Error(_) => Err(String::from("Something went wrong.")),
+                _ => Err(String::from("Something went wrong.")),
+            }
+        }
+        Err(error) => Err(String::from("Something went wrong.")),
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     #[test]
-    fn test() {
+    fn parse_fn_test() {
         parse("20 + 20");
         parse("sin(20)");
+    }
+
+    #[test]
+    fn addition_eval() {
+        assert_eq!(evaluate("20 + 30").unwrap(), 50.0);
     }
 }
 
