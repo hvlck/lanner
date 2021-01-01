@@ -1,4 +1,4 @@
-use crate::{AstNode, LannerError, Operation};
+use crate::{AstNode, Function, LannerError, LannerParser, Operation};
 
 pub fn evaluate_simple_expression(node: AstNode) -> Result<f64, LannerError> {
     match node {
@@ -13,5 +13,17 @@ pub fn evaluate_simple_expression(node: AstNode) -> Result<f64, LannerError> {
         _ => Err(LannerError::Other(
             "Expression contains something other than simple arithmetic.",
         )),
+    }
+}
+
+pub fn evaluate_function(node: AstNode) -> Result<f64, LannerError> {
+    match node {
+        AstNode::FunctionOp { function, value } => match function {
+            Function::Cos => Ok(value.cos()),
+            Function::Sin => Ok(value.sin()),
+            Function::Tan => Ok(value.tan()),
+            _ => Err(LannerError::InvalidFunction),
+        },
+        _ => Err(LannerError::InvalidInput),
     }
 }

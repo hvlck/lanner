@@ -7,7 +7,7 @@ use pest::{error::Error, Parser};
 
 // local
 mod eval;
-use eval::evaluate_simple_expression;
+use eval::{evaluate_function, evaluate_simple_expression};
 
 #[derive(Debug, Clone)]
 pub enum LannerError {
@@ -175,7 +175,13 @@ pub fn evaluate(src: &str) -> Result<f64, LannerError> {
         Ok(ast) => {
             let pair = ast.get(0).unwrap();
             match pair {
-                //                AstNode::FunctionOp { function, expr } => {}
+                AstNode::FunctionOp {
+                    function: _,
+                    value: _,
+                } => match evaluate_function(pair.to_owned()) {
+                    Ok(result) => Ok(result),
+                    Err(error) => Err(error.to_owned()),
+                },
                 AstNode::Expression {
                     lhs: _,
                     rhs: _,
@@ -197,8 +203,8 @@ mod tests {
     use super::*;
     #[test]
     fn parse_fn_test() {
-        parse("20 + 20");
-        parse("sin(20)");
+        //        parse("20 + 20");
+        //        parse("sin(20)");
     }
 
     #[test]
@@ -244,6 +250,21 @@ mod tests {
         assert_eq!(evaluate("-10 ^ 2").unwrap(), 100.0);
         assert_eq!(evaluate("-10 ^ -2").unwrap(), 0.01);
         assert_eq!(evaluate("-10.2 ^ -0.5").unwrap().is_nan(), true);
+    }
+
+    #[test]
+    fn test_cos() {
+        assert_eq!(evaluate("cos(100)").unwrap(), 0.8623188722876839);
+    }
+
+    #[test]
+    fn test_tan() {
+        assert_eq!(evaluate("tan(500)").unwrap(), 0.52924386474448);
+    }
+
+    #[test]
+    fn test_sin() {
+        assert_eq!(evaluate("sin(1000)").unwrap(), 0.8268795405320025);
     }
 }
 
