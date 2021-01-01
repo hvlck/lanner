@@ -1,5 +1,6 @@
 [package]
 name = "lcli"
+description = "math evaluator targeting WASM/JS"
 version = "0.0.0"
 authors = ["EthanJustice <47954690+EthanJustice@users.noreply.github.com>"]
 edition = "2018"
@@ -10,3 +11,5 @@ license = "MIT"
 publish = false
 
 [dependencies]
+lanner = { path = "../" }
+clap = { version = "~2.33.3", features = ["suggestions"] }
