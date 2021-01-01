@@ -9,7 +9,7 @@ operation = @{ add | subtract | multiply | divide | modulo | exponent | root }
 
 function = { function_keywords ~ "(" ~ number ~ ")" }
 
-function_keywords = @{ "sin" | "cos" | "tan" }
+function_keywords = @{ "sin" | "cos" | "tan" | "sqrt" }
 
 decimal_fraction = { "." ~ ASCII_DIGIT+ }
 number = @{ "-"? ~ ASCII_DIGIT+? ~ decimal_fraction? }

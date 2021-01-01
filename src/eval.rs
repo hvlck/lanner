@@ -22,6 +22,7 @@ pub fn evaluate_function(node: AstNode) -> Result<f64, LannerError> {
             Function::Cos => Ok(value.cos()),
             Function::Sin => Ok(value.sin()),
             Function::Tan => Ok(value.tan()),
+            Function::Sqrt => Ok(value.sqrt()),
             _ => Err(LannerError::InvalidFunction),
         },
         _ => Err(LannerError::InvalidInput),

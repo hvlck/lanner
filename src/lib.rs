@@ -59,6 +59,8 @@ pub enum Function {
     Sin,
     /// Tangent function
     Tan,
+    /// Square root function
+    Sqrt,
 }
 
 /// Represents a type of basic arithmetic operation.
@@ -164,6 +166,7 @@ fn parse_function(function: pest::iterators::Pair<Rule>) -> Result<Function, Lan
         "sin" => Ok(Function::Sin),
         "cos" => Ok(Function::Cos),
         "tan" => Ok(Function::Tan),
+        "sqrt" => Ok(Function::Sqrt),
         _ => Err(LannerError::InvalidFunction),
     }
 }
@@ -265,6 +268,11 @@ mod tests {
     #[test]
     fn test_sin() {
         assert_eq!(evaluate("sin(1000)").unwrap(), 0.8268795405320025);
+    }
+
+    #[test]
+    fn test_sqrt() {
+        assert_eq!(evaluate("sqrt(100)").unwrap(), 10.0);
     }
 }
 
