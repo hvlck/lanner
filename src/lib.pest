@@ -1,0 +1,18 @@
+operation = @{ add | subtract | multiply | divide | divide_with_remainder | exponent | radical }
+    add                   = { "+" }
+    subtract              = { "-" }
+    multiply              = { "*" }
+    divide                = { "/" }
+    divide_with_remainder = { "%" }
+    exponent              = { "**" }
+    radical               = { "*/*" }
+
+function = { function_keywords ~ "(" ~ number ~ ")" }
+
+function_keywords = @{ "sin" | "cos" | "tan" }
+
+decimal_fraction = { "." ~ ASCII_DIGIT+ }
+number = @{ ASCII_DIGIT+ ~ decimal_fraction? }
+
+expression = { number ~ WHITESPACE? ~ operation ~ WHITESPACE? ~ number }
+WHITESPACE = _{ " "{1,5} }
