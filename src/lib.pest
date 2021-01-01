@@ -14,6 +14,8 @@ function_keywords = @{ "sin" | "cos" | "tan" }
 decimal_fraction = { "." ~ ASCII_DIGIT+ }
 number = @{ ASCII_DIGIT+ ~ decimal_fraction? }
 
-// todo: fix so that chaining can take place (e.g. "1+1+1")
-expression = { number ~ WHITESPACE? ~ operation ~ WHITESPACE? ~ number }
+simple_expression = { number ~ WHITESPACE? ~ operation ~ WHITESPACE? ~ number }
 WHITESPACE = _{ " "{1,5} }
+
+// todo: fix so that chaining can take place (e.g. "1+1+1")
+expression = { simple_expression | function }
