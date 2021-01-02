@@ -3,7 +3,13 @@
 
 // crates
 use pest_derive::*;
-use pest::{error::Error, Parser};
+use lazy_static::lazy_static;
+use pest::{
+    error::Error,
+    iterators::Pairs,
+    prec_climber::{Assoc, Operator, PrecClimber},
+    Parser,
+};
 
 // local
 mod eval;
@@ -53,6 +59,8 @@ pub enum AstNode {
         /// the operation being performed between the left and right-hand sides
         operator: Operation,
     },
+    /// Value of an operation
+    Value(f64),
     /// An error of some sorts. This will later be replaced by an enum
     Error(LannerError),
 }
@@ -97,6 +105,19 @@ pub enum Operation {
 #[grammar = "lib.pest"]
 pub struct LannerParser;
 
+lazy_static! {
+    static ref PREC_CLIMBER: PrecClimber<Rule> = {
+        use Assoc::*;
+        use Rule::*;
+
+        PrecClimber::new(vec![
+            Operator::new(add, Left) | Operator::new(subtract, Left),
+            Operator::new(multiply, Left) | Operator::new(divide, Left),
+            Operator::new(exponent, Right),
+        ])
+    };
+}
+
 /// Begins the parsing process of a given string (`src`).
 pub fn parse(src: &str) -> Result<Vec<AstNode>, Error<Rule>> {
     let mut ast: Vec<AstNode> = Vec::new();
@@ -118,13 +139,23 @@ pub fn parse(src: &str) -> Result<Vec<AstNode>, Error<Rule>> {
 fn parse_to_ast(pair: pest::iterators::Pair<Rule>) -> AstNode {
     match pair.as_rule() {
         Rule::expression => parse_to_ast(pair.into_inner().next().unwrap()),
-        Rule::simple_expression => {
-            let mut pair = pair.into_inner();
-            let lhs = pair.next().unwrap();
-            let op = pair.next().unwrap();
-            let rhs = pair.next().unwrap();
-            parse_expression(op, lhs, rhs)
-        }
+        Rule::simple_expression => match pair.as_rule() {
+            //            Rule::simple_expression => parse_to_ast(pair),
+            // above causes a stack overflow, it's an infinite loop caused when using order of operations
+            _ => {
+                let mut pair = pair.into_inner();
+                let first = pair.next().unwrap();
+                let op = pair.next();
+                match op {
+                    Some(op) => {
+                        let lhs = first;
+                        let rhs = pair.next().unwrap();
+                        parse_expression(op, lhs, rhs)
+                    }
+                    None => AstNode::Value(first.as_str().parse::<f64>().unwrap()),
+                }
+            }
+        },
         Rule::function => {
             let mut pair = pair.into_inner();
             let function = pair.next().unwrap();
@@ -162,6 +193,7 @@ fn parse_expression(
     lhs: pest::iterators::Pair<Rule>,
     rhs: pest::iterators::Pair<Rule>,
 ) -> AstNode {
+    println!("{}", lhs.as_str());
     AstNode::Expression {
         lhs: lhs.as_str().parse::<f64>().unwrap(),
         rhs: rhs.as_str().parse::<f64>().unwrap(),
@@ -234,12 +266,17 @@ mod tests {
     }
 
     #[test]
+    fn order_of_operations() {
+        assert_eq!(evaluate("(10 - 10) * 10 + 10").unwrap(), 10.0);
+    }
+
+    #[test]
     fn addition_eval() {
         assert_eq!(evaluate("20 + 30").unwrap(), 50.0);
         assert_eq!(evaluate("-20 + 30").unwrap(), 10.0);
         assert_eq!(evaluate("-20 + -30").unwrap(), -50.0);
         assert_eq!(evaluate("-20.2 + 30").unwrap(), 9.8);
-        assert_eq!(evaluate("10.1 + .1").unwrap(), 10.2);
+        assert_eq!(evaluate("10.1 + 0.1").unwrap(), 10.2);
     }
 
     #[test]
@@ -316,9 +353,6 @@ mod parser_tests {
         let function = LannerParser::parse(Rule::function, "cos(20)");
         assert!(function.is_ok());
     }
-
-    #[test]
-    fn check_operators() {}
 
     #[test]
     fn check_expression() {

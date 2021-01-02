@@ -10,6 +10,7 @@ pub fn evaluate_simple_expression(node: AstNode) -> Result<f64, LannerError> {
             Operation::Exponent => Ok(lhs.powf(rhs)),
             _ => Err(LannerError::InvalidExpression),
         },
+        AstNode::Value(value) => Ok(value),
         _ => Err(LannerError::Other(
             "Expression contains something other than simple arithmetic.",
         )),

@@ -1,3 +1,4 @@
+// operators
 operation = @{ add | subtract | multiply | divide | modulo | exponent | root }
     add                   = { "+" }
     subtract              = { "-" }
@@ -7,15 +8,20 @@ operation = @{ add | subtract | multiply | divide | modulo | exponent | root }
     exponent              = { "^" }
     root               = { "^/" }
 
-function = { function_keywords ~ "(" ~ (simple_expression | number) ~ ")" }
+// functions
+function = { function_keywords ~ "(" ~ (simple_expression) ~ ")" }
 
 function_keywords = @{ "sin" | "cos" | "tan" | "sqrt" }
 
-decimal_fraction = { "." ~ ASCII_DIGIT+ }
-number = @{ "-"? ~ ASCII_DIGIT+? ~ decimal_fraction? }
+// numbers
+// todo: fix leading digits being required for integers
+number = @{ int ~ ("." ~ ASCII_DIGIT*)? ~ (^"e" ~ int)? }
+    int = { ("+" | "-")? ~ ASCII_DIGIT+ }
 
-simple_expression = { number ~ WHITESPACE? ~ operation ~ WHITESPACE? ~ number }
+// structure
+simple_expression = { term ~ (WHITESPACE? ~ operation ~ WHITESPACE? ~ term)* }
+term = _{ number | "(" ~ WHITESPACE? ~ simple_expression ~ WHITESPACE? ~ ")" }
 WHITESPACE = _{ " "{1,5} }
 
 // todo: fix so that chaining can take place (e.g. "1+1+1")
-expression = { simple_expression | function }
+expression = { function | simple_expression }
