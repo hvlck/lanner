@@ -18,6 +18,8 @@ use eval::{evaluate_function, evaluate_simple_expression};
 mod conversions;
 use conversions::Unit;
 
+mod constants;
+
 #[derive(Debug, Clone)]
 pub enum LannerError {
     /// The given function has invalid syntax
