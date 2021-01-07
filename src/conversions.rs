@@ -1,57 +1,63 @@
-pub enum System {
-    Metric,
-    Imperial,
-}
+// std
 
-#[derive(Debug, Clone)]
-pub enum Unit {
-    LengthSystem,
-    TemperatureSystem,
-    Duration,
-}
+// crates
+use uom::fmt::DisplayStyle::Abbreviation;
+use uom::si::f64::*;
+use uom::si::length::{centimeter, kilometer, meter};
+use uom::si::{Quantity, Units};
+use uom::{impl_from, Conversion};
 
-pub mod time {
-    pub enum Duration {
-        Millisecond,
-        Second,
-        Minute,
-        Hour,
-    }
-}
+use crate::AstNode;
 
-pub mod mass {}
+// local
 
-pub mod length {
-    pub enum ImperialLengthUnit {
-        Miles,
-        Yards,
-        Feet,
-        Inches,
-    }
-    pub enum MetricLengthUnit {
-        Kilometre,
-        Hectometre,
-        Decametre,
-        Metre,
-        Decimetre,
-        Centimetre,
-        Millimetre,
-    }
+//pub fn convert(node: AstNode) -> AstNode {
+//    match node.as_rule() {};
+//}
 
-    pub enum LengthSystem {
-        ImperialLengthUnit,
-        MetricLengthUnit,
-    }
-}
-
-pub mod temperature {
-    pub enum TemperatureSystem {
-        Fahrenheit,
-        Celsius,
-        Kelvin,
-    }
-}
-
-pub mod Currency {
-    
+// This seems horribly inefficient but I couldn't find a generic conversion method in crate::uom
+#[derive(Debug, Clone, Copy)]
+pub enum LannerUnit {
+    Angstrom,
+    AstronomicalUnit,
+    Attometer,
+    Centimeter,
+    Chain,
+    Decameter,
+    Decimeter,
+    Exameter,
+    Fathom,
+    Femtometer,
+    Fermi,
+    Foot,
+    FootSurvey,
+    Gigameter,
+    Hectometer,
+    Inch,
+    Kilometer,
+    LightYear,
+    Megameter,
+    Meter,
+    Micrometer,
+    Micron,
+    Mil,
+    Mile,
+    MileSurvey,
+    Millimeter,
+    Nanometer,
+    NauticalMile,
+    Parsec,
+    Petameter,
+    PicaComputer,
+    PicaPrinters,
+    Picometer,
+    PointComputer,
+    PointPrinters,
+    Rod,
+    Terameter,
+    Yard,
+    Yoctometer,
+    Yottameter,
+    Zeptometer,
+    Zettameter,
 }
