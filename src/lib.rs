@@ -6,14 +6,14 @@ use pest_derive::*;
 use lazy_static::lazy_static;
 use pest::{
     error::Error,
-    iterators::Pairs,
+    iterators::{Pair, Pairs},
     prec_climber::{Assoc, Operator, PrecClimber},
     Parser,
 };
 
 // local
 mod eval;
-use eval::{evaluate_function, evaluate_simple_expression};
+use eval::{evaluate_constant, evaluate_function, evaluate_simple_expression};
 
 mod conversions;
 use conversions::Unit;
@@ -22,6 +22,8 @@ mod constants;
 
 #[derive(Debug, Clone)]
 pub enum LannerError {
+    /// The given constant is invalid/nonexistent
+    InvalidConstant,
     /// The given function has invalid syntax
     InvalidFunction,
     /// The given expression has invalid syntax
@@ -32,6 +34,38 @@ pub enum LannerError {
     ParsingError(Error<Rule>),
     /// Something else went wrong
     Other(&'static str),
+}
+
+impl LannerError {
+    pub fn to_string(&self) -> String {
+        match self {
+            LannerError::InvalidConstant => {
+                "Invalid constant. Make sure your constant is supported/spelled correctly."
+                    .to_string()
+            }
+            LannerError::InvalidFunction => {
+                "Invalid function. Make sure your function is valid or supported by Lanner."
+                    .to_string()
+            }
+            LannerError::InvalidExpression => {
+                "Invalid expression. Make sure your expression is valid.".to_string()
+            }
+            LannerError::InvalidInput => {
+                "Invalid input. Make sure your input is valid Lanner grammar".to_string()
+            }
+            LannerError::ParsingError(r) => {
+                let mut error = String::from("Parsing error on line ");
+                let (line, col) = match r.line_col {
+                    pest::error::LineColLocation::Pos((line, col)) => (line, col),
+                    pest::error::LineColLocation::Span((line, col), (_, _)) => (line, col),
+                };
+                error.push_str(line.to_string().as_str());
+                error.push_str(col.to_string().as_str());
+                error
+            }
+            LannerError::Other(value) => value.to_string(),
+        }
+    }
 }
 
 /// Represents an AstNode which lanner consumes when evaluating expressions.
@@ -52,6 +86,8 @@ pub enum AstNode {
         /// This is the value that will be computed using the function.
         value: f64,
     },
+    /// Constants
+    Constant(Constant),
     /// Represents an expression, such as "10 + 10"
     Expression {
         /// the number on the **l**eft-**h**and **s**ide of the expression
@@ -65,6 +101,15 @@ pub enum AstNode {
     Value(f64),
     /// An error of some sorts. This will later be replaced by an enum
     Error(LannerError),
+}
+
+/// Represents a constant
+#[derive(Debug, Clone)]
+pub enum Constant {
+    E,
+    Pi,
+    Tau,
+    I,
 }
 
 /// Function corresponds to a special function that don't have a symbol equivalent (e.g. addition has "+"). There are few functions now.
@@ -147,14 +192,21 @@ fn parse_to_ast(pair: pest::iterators::Pair<Rule>) -> AstNode {
             _ => {
                 let mut pair = pair.into_inner();
                 let first = pair.next().unwrap();
+
                 let op = pair.next();
                 match op {
                     Some(op) => {
                         let lhs = first;
-                        let rhs = pair.next().unwrap();
-                        parse_expression(op, lhs, rhs)
+                        let rhs = parse_value(pair.next().unwrap());
+                        match rhs {
+                            Ok(value) => parse_expression(op, lhs, value),
+                            Err(err) => AstNode::Error(err),
+                        }
                     }
-                    None => AstNode::Value(first.as_str().parse::<f64>().unwrap()),
+                    None => match parse_value(first) {
+                        Ok(value) => AstNode::Value(value),
+                        Err(error) => AstNode::Error(error),
+                    },
                 }
             }
         },
@@ -189,16 +241,55 @@ fn parse_to_ast(pair: pest::iterators::Pair<Rule>) -> AstNode {
     }
 }
 
+/// Returns a given Constant variant from a string
+fn parse_constant(v: pest::iterators::Pair<Rule>) -> Constant {
+    match v.as_rule() {
+        Rule::constant => {
+            match v.as_str() {
+                "E" => Constant::E,
+                "Pi" => Constant::Pi,
+                "Tau" => Constant::Tau,
+                "i" => Constant::I,
+                _ => Constant::I, // todo: fix
+            }
+        }
+        _ => Constant::I, // todo: fix
+    }
+}
+
+/// Parse a given value. Returns either a value derived from a constant or the given value as an `f64`
+fn parse_value(v: pest::iterators::Pair<Rule>) -> Result<f64, LannerError> {
+    match v.as_str() {
+        "E" | "Pi" | "Tau" | "i" => match evaluate_constant(parse_constant(v)) {
+            Ok(value) => Ok(value),
+            Err(_error) => Err(LannerError::InvalidConstant),
+        },
+        _ => match v.as_str().parse::<f64>() {
+            Ok(value) => Ok(value),
+            Err(_error) => Err(LannerError::InvalidInput),
+        },
+    }
+}
+
 /// Converts a given Pest rule into an Expression in the AST
 fn parse_expression(
     operator: pest::iterators::Pair<Rule>,
     lhs: pest::iterators::Pair<Rule>,
-    rhs: pest::iterators::Pair<Rule>,
+    rhs: f64,
 ) -> AstNode {
-    println!("{}", lhs.as_str());
+    let lhs = match lhs.as_rule() {
+        Rule::constant => match evaluate_constant(parse_constant(lhs)) {
+            Ok(value) => value,
+            Err(e) => {
+                0.0 // todo: fix
+            }
+        },
+        _ => lhs.as_str().parse::<f64>().unwrap(),
+    };
+
     AstNode::Expression {
-        lhs: lhs.as_str().parse::<f64>().unwrap(),
-        rhs: rhs.as_str().parse::<f64>().unwrap(),
+        lhs: lhs,
+        rhs: rhs,
         operator: parse_operator(operator),
     }
 }
@@ -250,6 +341,12 @@ pub fn evaluate(src: &str) -> Result<f64, LannerError> {
                     Ok(result) => Ok(result),
                     Err(error) => Err(error.to_owned()),
                 },
+                AstNode::Value(value) => Ok(value.to_owned()),
+                // will astnode::constant ever match? I don't think so
+                AstNode::Constant(constant) => match evaluate_constant(constant.to_owned()) {
+                    Ok(result) => Ok(result),
+                    Err(error) => Err(error.to_owned()),
+                },
                 AstNode::Error(error) => Err(error.to_owned()),
                 _ => Err(LannerError::InvalidInput),
             }
@@ -270,6 +367,19 @@ mod tests {
     #[test]
     fn order_of_operations() {
         assert_eq!(evaluate("(10 - 10) * 10 + 10").unwrap(), 10.0);
+    }
+
+    #[test]
+    fn eval_constants() {
+        assert_eq!(
+            evaluate("Tau").unwrap(),
+            6.28318530717958647692528676655900577
+        );
+
+        assert_eq!(
+            evaluate("Tau + 1").unwrap(),
+            7.28318530717958647692528676655900577
+        );
     }
 
     #[test]

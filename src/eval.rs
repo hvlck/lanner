@@ -1,4 +1,14 @@
-use crate::{AstNode, Function, LannerError, LannerParser, Operation};
+use crate::{constants::*, AstNode, Constant, Function, LannerError, LannerParser, Operation};
+
+pub fn evaluate_constant(constant: Constant) -> Result<f64, LannerError> {
+    match constant {
+        Constant::E => Ok(E),
+        Constant::Pi => Ok(PI),
+        Constant::Tau => Ok(TAU),
+        Constant::I => Ok(i()),
+        _ => Err(LannerError::InvalidConstant),
+    }
+}
 
 pub fn evaluate_simple_expression(node: AstNode) -> Result<f64, LannerError> {
     match node {
@@ -9,6 +19,10 @@ pub fn evaluate_simple_expression(node: AstNode) -> Result<f64, LannerError> {
             Operation::Multiply => Ok(lhs * rhs),
             Operation::Exponent => Ok(lhs.powf(rhs)),
             _ => Err(LannerError::InvalidExpression),
+        },
+        AstNode::Constant(constant) => match evaluate_constant(constant) {
+            Ok(result) => Ok(result),
+            Err(err) => Err(err),
         },
         AstNode::Value(value) => Ok(value),
         _ => Err(LannerError::Other(

@@ -13,7 +13,7 @@ function = { function_keywords ~ "(" ~ (simple_expression) ~ ")" }
 
 function_keywords = @{ "sin" | "cos" | "tan" | "sqrt" }
 
-constants = @{ "E" | "Pi" | "Tau" | "i" }
+constant = @{ "E" | "Pi" | "Tau" | "i" }
 
 // numbers
 // todo: fix leading digits being required for integers
@@ -22,7 +22,7 @@ number = @{ int ~ ("." ~ ASCII_DIGIT*)? ~ (^"e" ~ int)? }
 
 // structure
 simple_expression = { term ~ (WHITESPACE? ~ operation ~ WHITESPACE? ~ term)* }
-term = _{ number | "(" ~ WHITESPACE? ~ simple_expression ~ WHITESPACE? ~ ")" }
+term = _{ constant | number | "(" ~ WHITESPACE? ~ simple_expression ~ WHITESPACE? ~ ")" }
 WHITESPACE = _{ " "{1,5} }
 
 // todo: fix so that chaining can take place (e.g. "1+1+1")

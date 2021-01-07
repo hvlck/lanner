@@ -1,11 +1,9 @@
-use std::f64::consts::*;
-
 /// Euler's number
 pub const E: f64 = std::f64::consts::E;
 /// Pi
-pub const Pi: f64 = PI;
+pub const PI: f64 = std::f64::consts::PI;
 /// Tau
-pub const Tau: f64 = TAU;
+pub const TAU: f64 = std::f64::consts::TAU;
 
 /// Imaginary unit
 pub fn i() -> f64 {
