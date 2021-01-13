@@ -18,5 +18,5 @@ Primary target is WebAssembly, but should work as a Rust crate as well.
 + linear algebra
 + constants
 + engineering
-+ type checking system for formulas?
-  + e.g `sum(...number) -> f64`
++ compile-time math macro?
+

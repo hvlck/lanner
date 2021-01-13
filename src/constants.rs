@@ -1,3 +1,5 @@
+//! Mathematical constants.
+
 /// Euler's number
 pub const E: f64 = std::f64::consts::E;
 /// Pi

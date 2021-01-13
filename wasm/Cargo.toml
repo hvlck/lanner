@@ -1,0 +1,31 @@
+[package]
+name = "lanner-wasm"
+version = "0.0.1"
+authors = ["EthanJustice <47954690+EthanJustice@users.noreply.github.com>"]
+edition = "2018"
+readme = "../README.md"
+homepage = "https://github.com/EthanJustice/lanner"
+repository = "https://github.com/EthanJustice/lanner"
+license = "MIT"
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = ["console_error_panic_hook"]
+
+[dependencies]
+wasm-bindgen = "0.2.63"
+console_error_panic_hook = { version = "0.1.6", optional = true }
+wee_alloc = { version = "0.4.5", optional = true }
+lanner = { path = "../" }
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3.13"
+
+[profile.release]
+opt-level = "s"
+
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = ["-Oz", "--enable-mutable-globals"]
