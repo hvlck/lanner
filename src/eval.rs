@@ -38,6 +38,7 @@ pub fn evaluate_function(node: AstNode) -> Result<f64, LannerError> {
             Function::Sin => Ok(value.sin()),
             Function::Tan => Ok(value.tan()),
             Function::Sqrt => Ok(value.sqrt()),
+            Function::Abs => Ok(value.abs()),
             _ => Err(LannerError::InvalidFunction),
         },
         _ => Err(LannerError::InvalidInput),

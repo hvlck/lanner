@@ -20,3 +20,6 @@ Primary target is WebAssembly, but should work as a Rust crate as well.
 + engineering
 + compile-time math macro?
 
++ functions
+  + nthRoot
+  + nth
