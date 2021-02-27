@@ -15,8 +15,9 @@ pub fn evaluate_simple_expression(node: AstNode) -> Result<f64, LannerError> {
         AstNode::Expression { lhs, rhs, operator } => match operator {
             Operation::Add => Ok(lhs + rhs),
             Operation::Subtract => Ok(lhs - rhs),
-            Operation::Divide => Ok(lhs / rhs),
             Operation::Multiply => Ok(lhs * rhs),
+            Operation::Divide => Ok(lhs / rhs),
+            Operation::Modulo => Ok(lhs % rhs),
             Operation::Exponent => Ok(lhs.powf(rhs)),
             _ => Err(LannerError::InvalidExpression),
         },

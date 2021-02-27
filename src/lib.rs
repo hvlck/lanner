@@ -1,15 +1,13 @@
-#[macro_use]
 // std
 
 // crates
-use pest_derive::*;
 use lazy_static::lazy_static;
 use pest::{
     error::Error,
-    iterators::{Pair, Pairs},
     prec_climber::{Assoc, Operator, PrecClimber},
     Parser,
 };
+use pest_derive::*;
 
 // local
 mod eval;
