@@ -14,7 +14,7 @@ abs = { "|" ~ (expression) ~ "|" }
 // functions
 function = { function_keywords ~ "(" ~ (simple_expression) ~ ")" }
 
-function_keywords = @{ "sin" | "cos" | "tan" | "sqrt" | "abs" }
+function_keywords = @{ "a"? ~ "sin" | "a"? ~ "cos" | "a"? ~ "tan" | "sqrt" | "abs" }
 
 constant = @{ "E" | "Pi" | "Tau" | "i" }
 

@@ -124,6 +124,12 @@ pub enum Function {
     Tan,
     /// Square root function
     Sqrt,
+    /// Arccosine function
+    Acos,
+    /// Arcsine function
+    Asin,
+    /// Arctangent function
+    Atan,
     /// Absolute value function
     Abs,
 }
@@ -333,6 +339,9 @@ fn parse_function(function: pest::iterators::Pair<Rule>) -> Result<Function, Lan
         "sin" => Ok(Function::Sin),
         "cos" => Ok(Function::Cos),
         "tan" => Ok(Function::Tan),
+        "asin" => Ok(Function::Asin),
+        "acos" => Ok(Function::Acos),
+        "atan" => Ok(Function::Atan),
         "sqrt" => Ok(Function::Sqrt),
         "abs" => Ok(Function::Abs),
         _ => Err(LannerError::InvalidFunction),
@@ -469,6 +478,21 @@ mod tests {
     #[test]
     fn test_sin() {
         assert_eq!(evaluate("sin(500 + 500)").unwrap(), 0.8268795405320025);
+    }
+
+    #[test]
+    fn test_acos() {
+        assert_eq!(evaluate("acos(0.5)").unwrap(), 1.0471975511965979);
+    }
+
+    #[test]
+    fn test_atan() {
+        assert_eq!(evaluate("atan(500)").unwrap(), 1.5687963294615568);
+    }
+
+    #[test]
+    fn test_asin() {
+        assert_eq!(evaluate("asin(0.7)").unwrap(), 0.775397496610753);
     }
 
     #[test]
