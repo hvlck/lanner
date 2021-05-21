@@ -6,6 +6,7 @@ pub fn evaluate_constant(constant: Constant) -> Result<f64, LannerError> {
         Constant::Pi => Ok(PI),
         Constant::Tau => Ok(TAU),
         Constant::I => Ok(i()),
+        Constant::Phi => Ok(phi()),
         _ => Err(LannerError::InvalidConstant),
     }
 }

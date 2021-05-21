@@ -7,6 +7,7 @@ operation = @{ add | subtract | multiply | divide | modulo | exponent | root }
     modulo = { "%" }
     exponent              = { "^" }
     root               = { "^/" }
+//    factorial = "!"
 
 // special cases
 abs = { "|" ~ (expression) ~ "|" }
@@ -14,9 +15,9 @@ abs = { "|" ~ (expression) ~ "|" }
 // functions
 function = { function_keywords ~ "(" ~ (simple_expression) ~ ")" }
 
-function_keywords = @{ "a"? ~ "sin" | "a"? ~ "cos" | "a"? ~ "tan" | "sqrt" | "abs" }
+function_keywords = @{ "a"? ~ "sin" | "a"? ~ "cos" | "a"? ~ "tan" | "sqrt" | "abs" | "round" }
 
-constant = @{ "E" | "Pi" | "Tau" | "i" }
+constant = @{ "E" | "Pi" | "Tau" | "i" | "phi" }
 
 conversion = { quantity ~ " to" ~ unit }
 

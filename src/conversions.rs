@@ -1,12 +1,6 @@
 // std
 
 // crates
-use uom::fmt::DisplayStyle::Abbreviation;
-use uom::si::f64::*;
-use uom::si::length::{centimeter, kilometer, meter};
-use uom::si::{Quantity, Units};
-use uom::{impl_from, Conversion};
-
 use crate::AstNode;
 
 // local

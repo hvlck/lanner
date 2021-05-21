@@ -104,10 +104,16 @@ pub enum AstNode {
 /// Represents a constant
 #[derive(Debug, Clone)]
 pub enum Constant {
+    /// Euler's number
     E,
+    /// Pi
     Pi,
+    /// Tau, the full circle constant.
     Tau,
+    /// Imaginary Unit
     I,
+    /// The Golden Ratio
+    Phi,
 }
 
 /// Function corresponds to a special function that don't have a symbol equivalent (e.g. addition has "+"). There are few functions now.
@@ -210,7 +216,10 @@ fn parse_to_ast(pair: pest::iterators::Pair<Rule>) -> AstNode {
                         let lhs = first;
                         let rhs = parse_value(pair.next().unwrap());
                         match rhs {
-                            Ok(value) => parse_expression(op, lhs, value),
+                            Ok(value) => match parse_expression(op, lhs, value) {
+                                Ok(result) => result,
+                                Err(error) => AstNode::Error(error),
+                            },
                             Err(err) => AstNode::Error(err),
                         }
                     }
@@ -265,27 +274,29 @@ fn parse_to_ast(pair: pest::iterators::Pair<Rule>) -> AstNode {
 }
 
 /// Returns a given Constant variant from a string
-fn parse_constant(v: pest::iterators::Pair<Rule>) -> Constant {
+fn parse_constant(v: pest::iterators::Pair<Rule>) -> Result<Constant, LannerError> {
     match v.as_rule() {
-        Rule::constant => {
-            match v.as_str() {
-                "E" => Constant::E,
-                "Pi" => Constant::Pi,
-                "Tau" => Constant::Tau,
-                "i" => Constant::I,
-                _ => Constant::I, // todo: fix
-            }
-        }
-        _ => Constant::I, // todo: fix
+        Rule::constant => match v.as_str() {
+            "E" => Ok(Constant::E),
+            "Pi" => Ok(Constant::Pi),
+            "Tau" => Ok(Constant::Tau),
+            "i" => Ok(Constant::I),
+            "phi" => Ok(Constant::Phi),
+            _ => Err(LannerError::InvalidConstant),
+        },
+        _ => Err(LannerError::InvalidConstant),
     }
 }
 
 /// Parse a given value. Returns either a value derived from a constant or the given value as an `f64`
 fn parse_value(v: pest::iterators::Pair<Rule>) -> Result<f64, LannerError> {
     match v.as_str() {
-        "E" | "Pi" | "Tau" | "i" => match evaluate_constant(parse_constant(v)) {
-            Ok(value) => Ok(value),
-            Err(_error) => Err(LannerError::InvalidConstant),
+        "E" | "Pi" | "Tau" | "i" | "phi" => match parse_constant(v) {
+            Ok(constant) => match evaluate_constant(constant) {
+                Ok(value) => Ok(value),
+                Err(error) => Err(error),
+            },
+            Err(error) => Err(error),
         },
         _ => match v.as_str().parse::<f64>() {
             Ok(value) => Ok(value),
@@ -299,21 +310,25 @@ fn parse_expression(
     operator: pest::iterators::Pair<Rule>,
     lhs: pest::iterators::Pair<Rule>,
     rhs: f64,
-) -> AstNode {
-    let lhs = match lhs.as_rule() {
-        Rule::constant => match evaluate_constant(parse_constant(lhs)) {
-            Ok(value) => value,
-            Err(e) => {
-                0.0 // todo: fix
-            }
+) -> Result<AstNode, LannerError> {
+    let lhs: Result<f64, LannerError> = match lhs.as_rule() {
+        Rule::constant => match parse_constant(lhs) {
+            Ok(constant) => match evaluate_constant(constant) {
+                Ok(value) => Ok(value),
+                Err(error) => Err(error),
+            },
+            Err(error) => Err(error),
         },
-        _ => lhs.as_str().parse::<f64>().unwrap(),
+        _ => Ok(lhs.as_str().parse::<f64>().unwrap()),
     };
 
-    AstNode::Expression {
-        lhs: lhs,
-        rhs: rhs,
-        operator: parse_operator(operator),
+    match lhs {
+        Ok(lhs) => Ok(AstNode::Expression {
+            lhs: lhs,
+            rhs: rhs,
+            operator: parse_operator(operator),
+        }),
+        Err(error) => Err(error),
     }
 }
 
@@ -416,6 +431,11 @@ mod tests {
             evaluate("Tau + 1").unwrap(),
             7.28318530717958647692528676655900577
         );
+
+        assert_eq!(
+            evaluate("phi + 1").unwrap(),
+            2.618033988749894848204586834365638117
+        )
     }
 
     #[test]

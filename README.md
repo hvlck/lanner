@@ -59,6 +59,13 @@ Pi - 3.14
 + constants
 + engineering
 + compile-time math macro?
++ arbitrary-precision math
++ comment and documentation system
++ finish language syntax
++ multiline parsing
++ logarithms
++ factorials with `x!`
++ formal specification
 
 + functions
   + nthRoot
