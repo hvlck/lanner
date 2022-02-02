@@ -30,6 +30,7 @@ const (
 	WHITESPACE
 
 	NUMBER
+	FLOAT
 )
 
 var tokens = []string{
@@ -49,6 +50,7 @@ var tokens = []string{
 	WHITESPACE: "WHITESPACE",
 
 	NUMBER: "NUMBER",
+	FLOAT:  "FLOAT",
 }
 
 type TokenList []Token
@@ -86,23 +88,63 @@ func (l *Lexer) Lex(rn rune) (Span, Token, string) {
 		return l.span, MULTIPLY, "*"
 	case '/':
 		return l.span, DIVIDE, "/"
+	case '^':
+		return l.span, POWER, "^"
+	case '(':
+		return l.span, LPARAN, "("
+	case ')':
+		return l.span, RPARAN, ")"
 	default:
 		{
 			if unicode.IsDigit(rn) {
-				n := l.lexNumber()
+				n, fp := l.lexNumber()
+				if fp {
+					return l.span, FLOAT, n
+				}
+
 				return l.span, NUMBER, n
 			} else if unicode.IsSpace(rn) {
 				return l.span, WHITESPACE, string(rn)
+			} else if unicode.IsLetter(rn) {
+				fn := l.lexFn()
+				return l.span, FN, fn
 			}
 		}
 	}
 	return Span{}, EOI, ""
 }
 
-func (l *Lexer) lexNumber() string {
+func (l *Lexer) lexFn() string {
+	l.unadvance(1)
+
+	fn := ""
+	for {
+		r, _, _ := l.reader.ReadRune()
+
+		l.span.column++
+
+		if unicode.IsLetter(r) {
+			fn += string(r)
+		} else if r == '(' {
+			// same behavior for now
+			l.unadvance(1)
+			break
+		} else {
+			l.unadvance(1)
+			break
+		}
+	}
+
+	return fn
+}
+
+// lexes a complete number
+// returns `false` in the boolean return value if the number is not floating-point, `true` otherwise
+func (l *Lexer) lexNumber() (string, bool) {
 	l.unadvance(1)
 
 	number := ""
+	fp := true
 	for {
 		// fix err at some point
 		r, _, _ := l.reader.ReadRune()
@@ -111,13 +153,16 @@ func (l *Lexer) lexNumber() string {
 
 		if unicode.IsDigit(r) {
 			number += string(r)
+		} else if r == '.' {
+			fp = true
+			number += "."
 		} else {
 			l.unadvance(1)
 			break
 		}
 	}
 
-	return number
+	return number, fp
 }
 
 func (l *Lexer) unadvance(n int) {
