@@ -28,6 +28,7 @@ const (
 	RPARAN
 	POINT
 	WHITESPACE
+	LNBREAK
 
 	NUMBER
 	FLOAT
@@ -48,6 +49,7 @@ var tokens = []string{
 	RPARAN:     ")",
 	POINT:      ".",
 	WHITESPACE: "WHITESPACE",
+	LNBREAK:    "LNBREAK",
 
 	NUMBER: "NUMBER",
 	FLOAT:  "FLOAT",
@@ -103,6 +105,8 @@ func (l *Lexer) Lex(rn rune) (Span, Token, string) {
 				}
 
 				return l.span, NUMBER, n
+			} else if rn == '\n' || rn == '\r' {
+				return l.span, LNBREAK, string(rn)
 			} else if unicode.IsSpace(rn) {
 				return l.span, WHITESPACE, string(rn)
 			} else if unicode.IsLetter(rn) {
