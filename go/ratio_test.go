@@ -45,12 +45,12 @@ func TestEquality(t *testing.T) {
 }
 
 func TestMultiply(t *testing.T) {
-	r := CreateRatio(-1, 2)
-	n := CreateRatio(2, 1)
+	r := CreateRatio(-2, 3)
+	n := CreateRatio(10, 4)
 
 	resultant := Multiply(r, n)
 
-	if resultant.numerator != 2 && resultant.denominator != 2 {
+	if resultant.numerator != 5 && resultant.denominator != 3 {
 		t.Fail()
 	}
 
@@ -60,12 +60,12 @@ func TestMultiply(t *testing.T) {
 }
 
 func TestDivide(t *testing.T) {
-	r := CreateRatio(-1, 2)
-	n := CreateRatio(2, 1)
+	r := CreateRatio(-2, 3)
+	n := CreateRatio(10, 4)
 
 	resultant := Divide(r, n)
 
-	if resultant.numerator != 1 && resultant.denominator != 4 {
+	if resultant.numerator != 4 && resultant.denominator != 15 {
 		t.Fail()
 	}
 

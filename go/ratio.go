@@ -23,19 +23,27 @@ func Equals(r *Ratio, n *Ratio) bool {
 }
 
 func Multiply(r *Ratio, n *Ratio) *Ratio {
-	return &Ratio{
+	f := Ratio{
 		numerator:   r.numerator * n.numerator,
 		denominator: r.denominator * n.denominator,
 		positive:    r.positive == n.positive,
 	}
+
+	f.Simplify()
+
+	return &f
 }
 
 func Divide(r *Ratio, n *Ratio) *Ratio {
-	return &Ratio{
+	f := Ratio{
 		numerator:   r.numerator * n.denominator,
 		denominator: r.denominator * n.numerator,
 		positive:    r.positive == n.positive,
 	}
+
+	f.Simplify()
+
+	return &f
 }
 
 func (*Ratio) Evaluate() float64 {
