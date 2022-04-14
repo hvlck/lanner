@@ -6,7 +6,7 @@ Primary target is WebAssembly, but should work as a Rust crate as well.
 
 ## Syntax
 
-Anything wrapped in parantheses (`(expr)`) or pipes (`|expr|`) that evaluates to a single value is valid.
+Anything wrapped in parentheses (`(expr)`) or pipes (`|expr|`) that evaluates to a single value is valid.
 
 ### Constants
 
@@ -31,6 +31,10 @@ Pi - 3.14
 + `atan(x)` - arctangent
 + `sqrt(x)` - square root
 + `abs(x)` - absolute value
++ `csx(x)` - cosecant
++ `sec(x)` - secant
++ `cot(x)` - cotangent
++ `log_b(x)` - base-*b* logarithm
 
 ### Operators
 
@@ -52,12 +56,17 @@ Pi - 3.14
 
 + equality checks (gt/lt/equal)
 + unit conversion
+  + `mi` or `mile`
 + variables/substitution
 + trigonometry
 + calculus
 + linear algebra
 + constants
 + engineering
+  + physics
+    + kinematics
+  + civil - structural properties, etc.
+  + thermodynamics and chemistry
 + compile-time math macro?
 + arbitrary-precision math
 + comment and documentation system
@@ -66,6 +75,14 @@ Pi - 3.14
 + logarithms
 + factorials with `x!`
 + formal specification
++ statistics
++ graphing backend
++ matrix and vector ops
++ financials
++ boolean algebra
+  + `==`
+  + `!=`
+  + etc.
 
 + functions
   + nthRoot
