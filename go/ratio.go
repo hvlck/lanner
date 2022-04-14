@@ -4,9 +4,8 @@
 package main
 
 type Ratio struct {
-	numerator   uint64
-	denominator uint64
-	positive    bool
+	numerator   int64
+	denominator int64
 }
 
 // determines whether two ratios are equal to one another
@@ -15,18 +14,39 @@ func Equals(r *Ratio, n *Ratio) bool {
 	r.Simplify()
 	n.Simplify()
 
-	if (r.numerator == n.numerator) && (r.denominator == n.denominator) && (r.positive == n.positive) {
+	if (r.numerator == n.numerator) && (r.denominator == n.denominator) {
 		return true
 	}
 
 	return false
 }
 
+func Add(r *Ratio, n *Ratio) *Ratio {
+	f := Ratio{
+		numerator:   (r.numerator * n.denominator) + (n.numerator * r.denominator),
+		denominator: r.denominator * n.denominator,
+	}
+
+	f.Simplify()
+
+	return &f
+}
+
+func Subtract(r *Ratio, n *Ratio) *Ratio {
+	f := Ratio{
+		numerator:   (r.numerator * n.denominator) - (n.numerator * r.denominator),
+		denominator: r.denominator * n.denominator,
+	}
+
+	f.Simplify()
+
+	return &f
+}
+
 func Multiply(r *Ratio, n *Ratio) *Ratio {
 	f := Ratio{
 		numerator:   r.numerator * n.numerator,
 		denominator: r.denominator * n.denominator,
-		positive:    r.positive == n.positive,
 	}
 
 	f.Simplify()
@@ -38,7 +58,6 @@ func Divide(r *Ratio, n *Ratio) *Ratio {
 	f := Ratio{
 		numerator:   r.numerator * n.denominator,
 		denominator: r.denominator * n.numerator,
-		positive:    r.positive == n.positive,
 	}
 
 	f.Simplify()
@@ -51,7 +70,7 @@ func (*Ratio) Evaluate() float64 {
 }
 
 func (r *Ratio) Simplify() {
-	factor := gcd(r.numerator, r.denominator)
+	factor := int64(gcd(r.numerator, r.denominator))
 	r.numerator = r.numerator / factor
 	r.denominator = r.denominator / factor
 }
@@ -59,20 +78,15 @@ func (r *Ratio) Simplify() {
 func CreateRatio(num int64, den int64) *Ratio {
 	n := float64(num)
 	d := float64(den)
-	p := true
-	if (num < 0 && den < 0) || (num > 0 && den > 0) {
-		p = false
-	}
 
 	return &Ratio{
-		numerator:   uint64(Absolute(n)),
-		denominator: uint64(Absolute(d)),
-		positive:    p,
+		numerator:   int64(n),
+		denominator: int64(d),
 	}
 }
 
 // greatest common denominator
-func gcd(a uint64, b uint64) uint64 {
+func gcd(a int64, b int64) uint64 {
 	d := b
 
 	c := b
@@ -85,5 +99,5 @@ func gcd(a uint64, b uint64) uint64 {
 		a = d
 	}
 
-	return a
+	return uint64(a)
 }

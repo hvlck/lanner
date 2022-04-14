@@ -20,7 +20,11 @@ func TestGCD(t *testing.T) {
 
 func TestRatio(t *testing.T) {
 	r := CreateRatio(10, -20)
-	if r.numerator != 10 && r.denominator != 20 && r.positive != false {
+	if r.numerator != 10 && r.denominator != 20 {
+		t.Fail()
+	}
+
+	if r.Evaluate() > 0 {
 		t.Fail()
 	}
 }
@@ -30,7 +34,11 @@ func TestSimplify(t *testing.T) {
 
 	r.Simplify()
 
-	if r.numerator != 2 && r.denominator != 3 && r.positive != false {
+	if r.numerator != 2 && r.denominator != 3 {
+		t.Fail()
+	}
+
+	if r.Evaluate() > 0 {
 		t.Fail()
 	}
 }
@@ -44,6 +52,37 @@ func TestEquality(t *testing.T) {
 	}
 }
 
+func TestAdd(t *testing.T) {
+	r := CreateRatio(-10, 20)
+	n := CreateRatio(7, 3)
+
+	// -1/2 + 7/3 = -3/6 + 14/6 = 11/3
+	resultant := Add(r, n)
+
+	if resultant.numerator != 11 && resultant.denominator != 6 {
+		t.Fail()
+	}
+
+	if resultant.Evaluate() < 0 {
+		t.Fail()
+	}
+}
+
+func TestSubtract(t *testing.T) {
+	r := CreateRatio(-10, 20)
+	n := CreateRatio(7, 3)
+
+	// -1/2 - 7/3 = -3/6 - 14/6 = -19/6
+	resultant := Subtract(r, n)
+
+	if resultant.numerator != 17 && resultant.denominator != 6 {
+		t.Fail()
+	}
+
+	if resultant.Evaluate() > 0 {
+		t.Fail()
+	}
+}
 func TestMultiply(t *testing.T) {
 	r := CreateRatio(-2, 3)
 	n := CreateRatio(10, 4)
@@ -54,7 +93,7 @@ func TestMultiply(t *testing.T) {
 		t.Fail()
 	}
 
-	if resultant.positive == true {
+	if resultant.Evaluate() > 0 {
 		t.Fail()
 	}
 }
@@ -69,7 +108,7 @@ func TestDivide(t *testing.T) {
 		t.Fail()
 	}
 
-	if resultant.positive == true {
+	if resultant.Evaluate() > 0 {
 		t.Fail()
 	}
 }
