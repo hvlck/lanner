@@ -1,7 +1,9 @@
 // utilities for working with numbers
 // mostly for arbitrary-precision math
 
-package main
+package ratio
+
+import "errors"
 
 type Ratio struct {
 	numerator   int64
@@ -65,8 +67,13 @@ func Divide(r *Ratio, n *Ratio) *Ratio {
 	return &f
 }
 
-func (*Ratio) Evaluate() float64 {
-	return 0
+func (r *Ratio) Evaluate() (float64, error) {
+	if r.denominator == 0 {
+		return 0, errors.New("division by zero error")
+	}
+
+	i := r.numerator / r.denominator
+	return float64(((r.numerator - i) * r.denominator) / r.denominator), nil
 }
 
 func (r *Ratio) Simplify() {

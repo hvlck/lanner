@@ -1,4 +1,4 @@
-package main
+package ratio
 
 import (
 	"testing"
@@ -24,7 +24,8 @@ func TestRatio(t *testing.T) {
 		t.Fail()
 	}
 
-	if r.Evaluate() > 0 {
+	v, _ := r.Evaluate()
+	if v > 0 {
 		t.Fail()
 	}
 }
@@ -38,7 +39,8 @@ func TestSimplify(t *testing.T) {
 		t.Fail()
 	}
 
-	if r.Evaluate() > 0 {
+	v, _ := r.Evaluate()
+	if v > 0 {
 		t.Fail()
 	}
 }
@@ -63,7 +65,8 @@ func TestAdd(t *testing.T) {
 		t.Fail()
 	}
 
-	if resultant.Evaluate() < 0 {
+	v, _ := resultant.Evaluate()
+	if v < 0 {
 		t.Fail()
 	}
 }
@@ -79,7 +82,8 @@ func TestSubtract(t *testing.T) {
 		t.Fail()
 	}
 
-	if resultant.Evaluate() > 0 {
+	v, _ := resultant.Evaluate()
+	if v > 0 {
 		t.Fail()
 	}
 }
@@ -93,7 +97,8 @@ func TestMultiply(t *testing.T) {
 		t.Fail()
 	}
 
-	if resultant.Evaluate() > 0 {
+	v, _ := resultant.Evaluate()
+	if v > 0 {
 		t.Fail()
 	}
 }
@@ -108,7 +113,15 @@ func TestDivide(t *testing.T) {
 		t.Fail()
 	}
 
-	if resultant.Evaluate() > 0 {
+	v, _ := resultant.Evaluate()
+	if v > 0 {
 		t.Fail()
 	}
+}
+
+func TestEvaluation(t *testing.T) {
+	r := CreateRatio(2, 3)
+	v, _ := r.Evaluate()
+
+	t.Logf("%v", v)
 }
