@@ -1,10 +1,13 @@
-package main
+package common
 
 import (
 	"errors"
 	"math"
 )
 
+func toPrecision(n float64, p uint64) float64 {
+	return math.Round(n*math.Pow(10, float64(p))) / math.Pow(10, float64(p))
+}
 
 // long-divides a number to the specified precision
 func Divide(dividend float64, divisor float64, precision uint64) (float64, error) {
