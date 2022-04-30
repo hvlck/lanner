@@ -1,6 +1,54 @@
 // Prefix conversions
 
 package conv
+
+type Unit int64
+
+var units = []string{}
+
+var si_prefixes = []string{
+	"Yotta",
+	"Zetta",
+	"Exa",
+	"Peta",
+	"tera",
+	"Giga",
+	"mega",
+	"kilo",
+	"hecto",
+	"deca",
+	"meter",
+	"",
+	"deci",
+	"centi",
+	"milli",
+	"micro",
+	"nano",
+	"pico",
+	"femto",
+	"atto",
+	"zepto",
+	"yocto",
+}
+
+func (u Unit) IsSI() bool {
+	u.String()
+
+	if si_prefixes[p] != nil {
+
+	}
+}
+
+func (t Unit) String() string {
+	return units[t]
+}
+
+func (u *Unit) Convert(to Unit) {
+	switch to {
+
+	}
+}
+
 type Prefix int64
 
 // 10^24 	yotta 	Y

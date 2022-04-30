@@ -1,8 +1,11 @@
 # lanner
 
-math evaluator
+arbitrary-precision math evaluator
 
-Primary target is WebAssembly, but should work as a Rust crate as well.
+Primary target is WebAssembly, but should work as a go package as well.
+
+--------------WARNING: VERY MUCH A WORK IN PROGRESS---------------
+DO NOT EXPECT VALUES TO BE ARBITRARILY ACCURATE OR FOR THE PACKAGE TO WORK AS INTENDED JUST YET.
 
 ## Syntax
 
