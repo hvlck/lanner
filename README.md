@@ -92,3 +92,7 @@ Pi - 3.14
 
 + order of operations doesn't work
 + nesting values doesn't work
+
+## Constants Reference
+
++ [The On-Line Encyclopedia of Integer Sequences® (OEIS®)](https://oeis.org/)

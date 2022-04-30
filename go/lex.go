@@ -32,6 +32,8 @@ const (
 
 	NUMBER
 	FLOAT
+
+	UNIT
 )
 
 var tokens = []string{
@@ -53,6 +55,8 @@ var tokens = []string{
 
 	NUMBER: "NUMBER",
 	FLOAT:  "FLOAT",
+
+	UNIT: "UNIT",
 }
 
 type TokenList []Token
@@ -110,7 +114,7 @@ func (l *Lexer) Lex(rn rune) (Span, Token, string) {
 			} else if unicode.IsSpace(rn) {
 				return l.span, WHITESPACE, string(rn)
 			} else if unicode.IsLetter(rn) {
-				fn := l.lexFn()
+				fn := l.lexText()
 				return l.span, FN, fn
 			}
 		}
@@ -118,7 +122,37 @@ func (l *Lexer) Lex(rn rune) (Span, Token, string) {
 	return Span{}, EOI, ""
 }
 
-func (l *Lexer) lexFn() string {
+const FUNCTIONS = "SIN COS TAN ARCSIN ARCCOS ARCTAN SEC CSC COT ARCSEC ARCCSC ARCCOT MIN MAX"
+
+// list of US customary units
+// in inch length 12in=1ft
+// ft foot length 3ft=1yd
+// yd yard length
+// mi mile length 5280ft=1mi
+// oz ounce weight 16oz=1lb
+// lb pound weight 2000lb=1T
+const US_CUSTOMARY_UNITS = "in ft yd mi oz lb T floz C pt qt F"
+
+// list of SI unit bases
+// base units:
+// m meter length
+// g gram mass
+// s second time
+// A ampere electric current
+// K kelvin temperature
+// mol mole amount of substance
+// cd candela luminous intensity
+// partial list of derived units:
+// N (kg*m/s^2) Newton force
+// J (N*m) Joule energy/work
+// W (J/s) Watts power
+// Hz (s^-1) Hertz frequency
+// V (m^2·kg·s^-3·A^-1) volt electric potential difference
+// ohm (m^2·kg·s^-3·A^-2) ohm electric resistance
+const SI_UNITS = "m g s A K mol cd N J W Hz V ohm"
+const SI_PREFIXES = "Y Z E P T G M k h da d c m micro n p f a z y"
+
+func (l *Lexer) lexText() string {
 	l.unadvance(1)
 
 	fn := ""
