@@ -21,8 +21,16 @@ const (
 	MULTIPLY
 	DIVIDE
 
-	POWER
-	FN
+	POWER     // exponentiation
+	FN        // function
+	FACTORIAL // factorial (!)
+
+	// comparison
+	GT  // greater than
+	LT  // less than
+	LTE // less than equal to
+	GTE // greater than equal to
+	EQ  // equal (=)
 
 	LPARAN
 	RPARAN
@@ -44,8 +52,15 @@ var tokens = []string{
 	MULTIPLY: "*",
 	DIVIDE:   "/",
 
-	POWER: "^",
-	FN:    "fn()",
+	POWER:     "^",
+	FN:        "fn()",
+	FACTORIAL: "!",
+
+	GT:  ">",
+	LT:  "<",
+	LTE: "<=",
+	GTE: ">=",
+	EQ:  "=",
 
 	LPARAN:     "(",
 	RPARAN:     ")",
@@ -100,6 +115,10 @@ func (l *Lexer) Lex(rn rune) (Span, Token, string) {
 		return l.span, LPARAN, "("
 	case ')':
 		return l.span, RPARAN, ")"
+	case '!':
+		return l.span, FACTORIAL, "!"
+	case '=':
+		return l.span, EQ, "="
 	default:
 		{
 			if unicode.IsDigit(rn) {
@@ -109,6 +128,20 @@ func (l *Lexer) Lex(rn rune) (Span, Token, string) {
 				}
 
 				return l.span, NUMBER, n
+			} else if rn == '<' || rn == '>' {
+				p := l.advanceIf('=')
+
+				if p == true && rn == '<' {
+					return l.span, LTE, "<="
+				} else if p == true && rn == '>' {
+					return l.span, GTE, ">="
+				} else if p == false {
+					if rn == '>' {
+						return l.span, GT, ">"
+					} else if rn == '<' {
+						return l.span, LT, "<"
+					}
+				}
 			} else if rn == '\n' || rn == '\r' {
 				return l.span, LNBREAK, string(rn)
 			} else if unicode.IsSpace(rn) {
@@ -151,6 +184,17 @@ const US_CUSTOMARY_UNITS = "in ft yd mi oz lb T floz C pt qt F"
 // ohm (m^2·kg·s^-3·A^-2) ohm electric resistance
 const SI_UNITS = "m g s A K mol cd N J W Hz V ohm"
 const SI_PREFIXES = "Y Z E P T G M k h da d c m micro n p f a z y"
+
+func (l *Lexer) advanceIf(rn rune) bool {
+	r, _, _ := l.reader.ReadRune()
+
+	if r == rn {
+		return true
+	} else {
+		l.unadvance(1)
+		return false
+	}
+}
 
 func (l *Lexer) lexText() string {
 	l.unadvance(1)
