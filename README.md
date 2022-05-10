@@ -7,6 +7,12 @@ Primary target is WebAssembly, but should work as a go package as well.
 --------------WARNING: VERY MUCH A WORK IN PROGRESS---------------
 DO NOT EXPECT VALUES TO BE ARBITRARILY ACCURATE OR FOR THE PACKAGE TO WORK AS INTENDED JUST YET.
 
+## Priorities
+
++ accuracy
++ speed
++ actually implementing things
+
 ## Syntax
 
 Anything wrapped in parentheses (`(expr)`) or pipes (`|expr|`) that evaluates to a single value is valid.
@@ -99,3 +105,7 @@ Pi - 3.14
 ## Constants Reference
 
 + [The On-Line Encyclopedia of Integer Sequences® (OEIS®)](https://oeis.org/)
+
+## Inspiration and Thanks
+
++ [GitHub - p-e-w/savage: A primitive computer algebra system](https://github.com/p-e-w/savage)
