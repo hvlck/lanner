@@ -122,6 +122,12 @@ func (l *Lexer) Lex(rn rune) (Span, Token, string) {
 	return Span{}, EOI, ""
 }
 
+// list of functions
+// (s) supported | (ns) not supported
+// sine sin(x) (ns)
+// cosine cos(x) (ns)
+// tangent tan(x) (ns)
+// arcsine arcsin(x) (ns)
 const FUNCTIONS = "SIN COS TAN ARCSIN ARCCOS ARCTAN SEC CSC COT ARCSEC ARCCSC ARCCOT MIN MAX"
 
 // list of US customary units
