@@ -65,7 +65,7 @@ Pi - 3.14
 
 + equality checks (gt/lt/equal)
 + unit conversion
-  + `mi` or `mile`
+  + `mi` or `mile` (abbreviated/full units)
 + variables/substitution
 + trigonometry
 + calculus
