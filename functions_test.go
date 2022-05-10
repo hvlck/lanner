@@ -13,3 +13,13 @@ func TestAbsolute(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestFactorial(t *testing.T) {
+	two := Factorial(2)
+	fifteen := Factorial(15)
+
+	if two != 2 || fifteen != 1307674368000 {
+		t.Log("factorials incorrect")
+		t.Fail()
+	}
+}
