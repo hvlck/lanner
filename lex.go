@@ -24,6 +24,7 @@ const (
 	POWER     // exponentiation
 	FN        // function
 	FACTORIAL // factorial (!)
+	PIPE
 
 	// comparison
 	GT  // greater than
@@ -55,6 +56,7 @@ var tokens = []string{
 	POWER:     "^",
 	FN:        "fn()",
 	FACTORIAL: "!",
+	PIPE:      "|",
 
 	GT:  ">",
 	LT:  "<",
