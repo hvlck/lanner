@@ -113,10 +113,10 @@ func (l *Lexer) Lex(rn rune) (Span, Token, string) {
 		return l.span, DIVIDE, "/"
 	case '^':
 		return l.span, POWER, "^"
-	case '(':
-		return l.span, LPARAN, "("
-	case ')':
-		return l.span, RPARAN, ")"
+	// case '(':
+	// 	return l.span, LPARAN, "("
+	// case ')':
+	// 	return l.span, RPARAN, ")"
 	case '!':
 		return l.span, FACTORIAL, "!"
 	case '=':
@@ -133,11 +133,11 @@ func (l *Lexer) Lex(rn rune) (Span, Token, string) {
 			} else if rn == '<' || rn == '>' {
 				p := l.advanceIf('=')
 
-				if p == true && rn == '<' {
+				if p && rn == '<' {
 					return l.span, LTE, "<="
-				} else if p == true && rn == '>' {
+				} else if p && rn == '>' {
 					return l.span, GTE, ">="
-				} else if p == false {
+				} else if !p {
 					if rn == '>' {
 						return l.span, GT, ">"
 					} else if rn == '<' {
@@ -148,7 +148,7 @@ func (l *Lexer) Lex(rn rune) (Span, Token, string) {
 				return l.span, LNBREAK, string(rn)
 			} else if unicode.IsSpace(rn) {
 				return l.span, WHITESPACE, string(rn)
-			} else if unicode.IsLetter(rn) {
+			} else if unicode.IsLetter(rn) || rn == '(' || rn == ')' {
 				fn := l.lexText()
 				return l.span, FN, fn
 			}
@@ -204,6 +204,7 @@ func (l *Lexer) advanceIf(rn rune) bool {
 	}
 }
 
+//
 func (l *Lexer) lexText() string {
 	l.unadvance(1)
 
@@ -217,10 +218,8 @@ func (l *Lexer) lexText() string {
 			fn += string(r)
 		} else if r == '(' {
 			// same behavior for now
-			l.unadvance(1)
 			break
-		} else {
-			l.unadvance(1)
+		} else if r == ')' {
 			break
 		}
 	}

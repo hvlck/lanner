@@ -16,9 +16,18 @@ func TestAbsolute(t *testing.T) {
 
 func TestFactorial(t *testing.T) {
 	two := Factorial(2)
+	fTwo, isT := IsInt(two)
+	iT := fTwo.Int64()
+
 	fifteen := Factorial(15)
 
-	if two != 2 || fifteen != 1307674368000 {
+	fFift, is := IsInt(fifteen)
+	iF := fFift.Int64()
+	if !is || !isT {
+		t.Log("return value not an int")
+	}
+
+	if iT != 2 || iF != 1307674368000 {
 		t.Log("factorials incorrect")
 		t.Fail()
 	}

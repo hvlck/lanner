@@ -2,7 +2,7 @@ package main
 
 import (
 	"errors"
-	"fmt"
+	"math/big"
 	"strconv"
 )
 
@@ -23,30 +23,31 @@ func evalComparison(v UnaryOp) bool {
 }
 
 // todo: replace with own implementation
-func evalUnary(v UnaryOp) float64 {
+func evalUnaryFloat(v UnaryOp) big.Float {
+	lhs := big.NewFloat(v.lhs)
+	rhs := big.NewFloat(v.rhs)
 	switch v.op {
 	case ADD:
-		return v.lhs + v.rhs
+		return *lhs.Add(lhs, rhs)
 	case SUBTRACT:
-		return v.lhs - v.rhs
+		return *lhs.Sub(lhs, rhs)
 	case MULTIPLY:
-		return v.lhs * v.rhs
+		return *lhs.Mul(lhs, rhs)
 	case DIVIDE:
-		return v.lhs / v.rhs
+		return *lhs.Quo(lhs, rhs)
 	default:
-		return 0.0
+		return *big.NewFloat(0.0)
 	}
 }
 
 // converts any given operation type to a value
 // return values: value, # of tokens consumed, error
 func (l *Lexer) toValue(v interface{}) (interface{}, uint8, error) {
-	fmt.Println(v)
 	switch z := v.(type) {
 	case UnaryOp:
 		{
 			if UNARY_OPERATORS[z.op] {
-				return evalUnary(z), 3, nil
+				return evalUnaryFloat(z), 3, nil
 			} else if COMPARISON_OPS[z.op] {
 				return evalComparison(z), 3, nil
 			}
@@ -102,7 +103,7 @@ var COMPARISON_OPS = map[Token]bool{
 func (l *Lexer) groupOp(v ...TokenEntry) (interface{}, error) {
 	op := v[1].token
 
-	for a, r := range v {
+	for _, r := range v {
 		if r.token == EOI {
 			return nil, errors.New("end of input")
 		}
@@ -120,25 +121,38 @@ func (l *Lexer) groupOp(v ...TokenEntry) (interface{}, error) {
 	return nil, nil
 }
 
+func IsInt(v interface{}) (*big.Int, bool) {
+	switch r := v.(type) {
+	case *big.Int:
+		return r, true
+	default:
+		return new(big.Int), false
+	}
+}
+
+func IsFloat(v interface{}) (*big.Float, bool) {
+	switch r := v.(type) {
+	case *big.Float:
+		return r, true
+	default:
+		return new(big.Float), false
+	}
+}
+
 // evaluates tokens
 func (l *Lexer) eval() (interface{}, error) {
-	var value interface{}
-	t := 0
-	for t <= len(l.tokens)-1 {
+	value := big.NewFloat(0)
+
+	for t := 0; t < len(l.tokens)-1; t++ {
 		tok := l.tokens[t]
 
-		if t+2 > len(l.tokens) {
-			break
-		}
-
 		op, err := l.groupOp(l.tokens[t : t+3]...)
-		fmt.Println(op)
 		if op == nil {
 			return value, nil
 		}
 
 		if err != nil {
-			return 0.0, err
+			return nil, err
 		}
 
 		if tok.token == LNBREAK || tok.token == EOI {
@@ -154,19 +168,12 @@ func (l *Lexer) eval() (interface{}, error) {
 		switch zt := z.(type) {
 		case bool:
 			return z, nil
-		case float64:
+		case big.Float:
 			{
-				switch r := value.(type) {
-				case float64:
-					value = r + zt
-				}
+				value = value.Add(value, &zt)
 			}
 		}
-
-		t++
 	}
-
-	// fmt.Print(value)
 
 	return value, nil
 }

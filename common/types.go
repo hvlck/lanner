@@ -1,13 +1,15 @@
 package common
 
+import "fmt"
+
 // any value that can be solved for
 type Determinate struct {
-	src   interface{}
-	value float64
+	Src   interface{}
+	Value uint
 }
 
 // returns the value of the determinate
 // todo: functional implementation
-func (d *Determinate) resolve() float64 {
-	return 0
+func (d *Determinate) Resolve() string {
+	return fmt.Sprint(d.Value)
 }

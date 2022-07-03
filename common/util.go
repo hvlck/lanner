@@ -47,10 +47,10 @@ func Lt(l interface{}, r interface{}) bool {
 // sums values
 func Sum(d ...Determinate) float64 {
 	r := 0.0
-	for _, i := range d {
-		v := i.resolve()
-		r += v
-	}
+	// for _, _ := range d {
+	// 	// _ := i.resolve()
+	// 	// r += v
+	// }
 
 	return r
 }

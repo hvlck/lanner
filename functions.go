@@ -3,18 +3,19 @@ package main
 import (
 	"errors"
 	"math"
+	"math/big"
 )
 
 // todo: support floating point
 // very simple and unoptimized implementation
 // currently only supports whole numbers
-func Factorial(n uint64) uint64 {
-	p := 1
+func Factorial(n uint64) *big.Int {
+	p := big.NewInt(1)
 	for idx := 1; idx <= int(n); idx++ {
-		p = p * idx
+		p = p.Mul(p, big.NewInt(int64(idx)))
 	}
 
-	return uint64(p)
+	return p
 }
 
 // todo: memoize for special angles
@@ -40,11 +41,6 @@ func Acos(n int8) (float64, error) {
 // raise a number **base** to a power **pow**
 func Pow(base float64, pow float64) float64 {
 	return math.Pow(base, pow)
-}
-
-// vectors and vector resolution
-func Vec() {
-
 }
 
 func Absolute(num float64) float64 {
