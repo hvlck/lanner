@@ -1,3 +1,0 @@
-// chemistry
-
-package chem
