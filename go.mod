@@ -1,3 +1,3 @@
-module lanner
+module github.com/hvlck/lanner
 
-go 1.23
+go 1.19
